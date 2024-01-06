@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .btn {
+    @apply inline-block ml-[12px] py-[6px] px-[12px] rounded-lg border-purple-800 border-[1px]  text-purple-900 transition-all duration-500 hover:text-white hover:bg-purple-800;
+  }
+
+  .errors {
+    @apply text-red-700 italic;
+  }
+}

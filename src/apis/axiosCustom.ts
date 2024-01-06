@@ -5,7 +5,11 @@ class AxiosCustom {
   constructor() {
     this.axiosInstance = axios.create({
       baseURL: 'http://localhost:4000/',
-      timeout: 10000
+      timeout: 10000,
+      headers: {
+        'Content-Length': 'application/json',
+        'Acess-Control-Allow-Origin': '*'
+      }
     })
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
