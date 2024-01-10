@@ -10,4 +10,8 @@
   .errors {
     @apply text-red-700 italic;
   }
+
+  .isActive {
+    @apply outline-[5px] outline-cyan-600 outline-none transition-all duration-200;
+  }
 }

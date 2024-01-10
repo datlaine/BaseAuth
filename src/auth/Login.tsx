@@ -1,5 +1,9 @@
-import React from 'react'
+import { useMutation } from '@tanstack/react-query'
+import { AxiosResponse } from 'axios'
+import React, { useContext } from 'react'
 import { useForm } from 'react-hook-form'
+import Auth, { TAuthInfo, TResponse } from '~/apis/auth'
+import { AuthContext } from './AuthContext'
 
 type IDefaultValues = {
   email: string
@@ -15,13 +19,27 @@ type Props = {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Login = (props: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { setUser } = useContext(AuthContext)
+
+  const LoginResponse = useMutation({
+    mutationKey: ['login'],
+    mutationFn: (payload: TAuthInfo) => Auth.login(payload),
+    onSuccess: (dataResponse: AxiosResponse<TResponse>) => {
+      const { data } = dataResponse
+      localStorage.setItem('token', JSON.stringify(data.metadata.access_token))
+      localStorage.setItem('_id', JSON.stringify(data.metadata.user._id))
+      setUser({ _id: data.metadata.user._id })
+      console.log('Xin chào ', data)
+    }
+  })
+
   const { setMode } = props
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm<IDefaultValues>({ defaultValues: intialValue })
-  console.log('re-render')
+  //   console.log('re-render')
   const handleLogin = () => {
     // setUser(true)
   }
@@ -34,6 +52,7 @@ const Login = (props: Props) => {
 
   const onSubmit1 = (data: IDefaultValues) => {
     console.log(data)
+    LoginResponse.mutate(data)
   }
 
   return (

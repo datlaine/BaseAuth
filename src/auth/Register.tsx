@@ -1,5 +1,8 @@
+import { useMutation } from '@tanstack/react-query'
+import { AxiosResponse } from 'axios'
 import React from 'react'
 import { useForm } from 'react-hook-form'
+import Auth, { TAuthInfo, TResponse } from '~/apis/auth'
 
 type Props = {
   setMode?: React.Dispatch<React.SetStateAction<string>>
@@ -20,7 +23,18 @@ const initialValue: IDefaultValue = {
 const Register = (props: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { setMode } = props
+  const RegisterResponse = useMutation({
+    mutationKey: ['register'],
+    mutationFn: (payload: TAuthInfo) => Auth.register(payload),
+    onSuccess: (dataRespone: AxiosResponse<TResponse>) => {
+      console.log('response', dataRespone)
+      const { data } = dataRespone
+      localStorage.setItem('token', JSON.stringify(data.metadata.access_token))
+      localStorage.setItem('_id', JSON.stringify(data.metadata.user._id))
 
+      reset()
+    }
+  })
   const {
     register,
     //     getValues,
@@ -29,7 +43,7 @@ const Register = (props: Props) => {
     watch,
     formState: { errors }
   } = useForm<IDefaultValue>({ defaultValues: initialValue })
-  console.log(errors)
+  //   console.log(errors)
   const navigateLogin = () => {
     if (setMode) setMode('login')
   }
@@ -40,16 +54,8 @@ const Register = (props: Props) => {
 
   const onSubmit = (data: IDefaultValue) => {
     console.log(errors, data)
-    let clear: NodeJS.Timeout
-    const a = new Promise((res) => {
-      clear = setTimeout(() => {
-        reset(), res('Ok submit')
-      }, 2000)
-    })
-    a.then((b) => {
-      alert(b)
-      clearTimeout(clear as NodeJS.Timeout)
-    })
+    const { email, password } = data
+    RegisterResponse.mutate({ email, password })
   }
 
   return (
